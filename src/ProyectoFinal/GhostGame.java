@@ -1,17 +1,22 @@
 package ProyectoFinal;
 
+import java.util.Random;
+
 public class GhostGame {
-    private Player[] players = new Player[100];
-    private int contarjugador = 0;
+    private Player[] players;
+    private int contarjugador;
     private Player playeractual;
-    private char[][] tablero = new char[6][6]; //tablero 6x6
-    private String mododejuego = "Aleatorio";
+    private char[][] tablero;
+    private String mododejuego;
     private int dificultad;
     
     public GhostGame(){
+        players = new Player[100];
         contarjugador = 0;
         playeractual = null;
         tablero = new char[6][6];
+        mododejuego = "aleatorio";
+        dificultad = 8; //Modo normal por defecto
         creartablero();
     }
     
@@ -23,7 +28,7 @@ public class GhostGame {
             }
         }
         if (password.length() < 8) {
-            System.out.println("La contrasena debe ser de al menos 8 caracteres");
+            System.out.println("La contrasena debe ser de al menos de 8 caracteres");
             return;
         }
         players[contarjugador++] = new Player(username, password);
@@ -45,7 +50,7 @@ public class GhostGame {
     public void creartablero() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                tablero[i][j] = '.';
+                tablero[i][j] = '_';
             }
         }
     }
@@ -53,10 +58,53 @@ public class GhostGame {
     public void mostrartablero() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                System.out.print(tablero[i][j] + " . ");
+                System.out.print(tablero[i][j] + " ");
             }
             System.out.println();
         }
+    }
+    
+     public void colocarFantasmas(Player jugador, boolean esManual) {
+        char bueno = 'B', malo = 'M';
+        int cantidad = dificultad / 2;
+        Random random = new Random();
+
+        for (int i = 0; i < cantidad; i++) {
+            for (char tipo : new char[]{bueno, malo}) {
+                if (esManual) {
+                    // Modo manual: pedir coordenadas al usuario
+                    System.out.println("Jugador " + jugador.getUsername() + ", coloque su fantasma (" + tipo + "):");
+                    // Obtener coordenadas válidas de entrada (usar Scanner en Main)
+                } else {
+                    // Modo aleatorio
+                    int fila, col;
+                    do {
+                        fila = random.nextInt(2);
+                        col = random.nextInt(6);
+                    } while (tablero[fila][col] != '_');
+                    tablero[fila][col] = tipo;
+                }
+            }
+        }
+    }
+     
+    public boolean moverFantasma(int filaOrigen, int colOrigen, int filaDestino, int colDestino, Player jugador) {
+        if (filaDestino < 0 || filaDestino >= 6 || colDestino < 0 || colDestino >= 6) {
+            System.out.println("Movimiento fuera de rango.");
+            return false;
+        }
+        if (Math.abs(filaDestino - filaOrigen) + Math.abs(colDestino - colOrigen) != 1) {
+            System.out.println("Solo puedes mover una casilla.");
+            return false;
+        }
+        if (tablero[filaDestino][colDestino] != '_') {
+            System.out.println("La casilla está ocupada.");
+            return false;
+        }
+        char fantasma = tablero[filaOrigen][colOrigen];
+        tablero[filaOrigen][colOrigen] = '_';
+        tablero[filaDestino][colDestino] = fantasma;
+        return true;
     }
     
     public Player getPlayeractual(){
@@ -94,4 +142,30 @@ public class GhostGame {
                 break;
         }
     }
+    
+    public void configurarModo(String nuevomodo){
+        if (nuevomodo.equalsIgnoreCase("ALEATORIO") || nuevomodo.equalsIgnoreCase("MANUAL")) {
+            mododejuego = nuevomodo;
+        }
+    }
+    
+    public String getmododejuego(){
+        return mododejuego;
+    }
+    
+    public void eliminarJugador(){
+        for (int i = 0; i < contarjugador; i++) {
+            if (players[i] == playeractual) {
+                
+                for (int j = 0; j < contarjugador -1; j++) {
+                    players[j]=players[j+1];
+                }
+                players[contarjugador - 1 ]=null;
+                contarjugador --;
+                playeractual=null;
+                break;
+            }
+        }
+    }
+    
 }
