@@ -34,10 +34,10 @@ public class Main {
                     break;
                 case 2:
                     System.out.print("Nuevo Usuario: ");
-                    String newUsername = sc.next();
+                    username = sc.next();
                     System.out.print("Nueva Contrasena: ");
-                    String newPassword = sc.next();
-                    juego.registrar(newUsername, newPassword);
+                    password = sc.next();
+                    juego.registrar(username, password);
                     break;
                 case 3:
                     System.out.println("Ha salido del juego");
@@ -69,12 +69,7 @@ public class Main {
                         System.out.println("Jugador no registrado");
                         break;
                     }
-                    
-                    //Iniciar el tablero
-                    juego.creartablero();
-                    juego.mostrartablero();
-                    
-                    
+                    juego.iniciarJuego(player2, sc);
                     break;
                 case 2:
                     configuracion(juego);
@@ -82,7 +77,6 @@ public class Main {
                 case 3:
                     reportes(juego);
                     break;
-                    
                 case 4:
                     perfil(juego);
                     break;
@@ -110,33 +104,31 @@ public class Main {
             switch (opcion){
                 case 1:
                     System.out.println("=====DIFICULTAD=====");
-                    System.out.println("Selecione la dificultad del juego:"+
-                                        "\n 1. Normal - (8 fantasmas por jugador)"+
-                                        "\n 2. Expert - (4 fantasmas por jugador)"+
-                                        "\n 3. Genius - (2 fantasmas y 4 trampas)");
+                    System.out.println("1 - Normal - (8 fantasmas por jugador)"+
+                                        "\n2 - Expert - (4 fantasmas por jugador)"+
+                                        "\n3 - Genius - (2 fantasmas y 4 trampas)");
+                    System.out.println("Selecione la dificultad del juego: ");
                     int dificultad = sc.nextInt();
                     juego.cambiarDificultad(dificultad);
                     System.out.println("Ha cambiado la dificultad" );
                     break;
-                    
                 case 2:
                     System.out.println("====MODO DE JUEGO=====");
-                    System.out.println("Selecicone el modo de juego:"+
-                                        "\n1 - Aleatorio"+
-                                        "\n2 - Manual");
+                    System.out.println("1 - Aleatorio"+
+                                       "\n2 - Manual");
+                    System.out.println("Seleccione un modoo de juego: ");
                     int modo = sc.nextInt();
                      if (modo == 1) {
-                        juego.configurarModo("aleatorio");
+                        juego.configurarModo("ALEATORIO");
                     }
                     else if(modo == 2){
-                        juego.configurarModo("manual");
+                        juego.configurarModo("MANUAL");
                     }
                     else{
                         System.out.println("Opcion no valida");
                     }
                     System.out.println("Modo Actualizado");
                     break;
-                    
                 case 3:
                     return;
                 default:
@@ -147,84 +139,82 @@ public class Main {
     }
     
     public static void reportes(GhostGame juego){
-        Scanner lea=new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
         
-        while(true){
-            System.out.println("---REPORTES---"
-            +"\n 1. Ultimos 10 juegos"
-            +"\n 2. Ranking de Jugadores"
-            +"\n 3. Regresar al Menu Principal"
-            +"\n Ingrese una opcion");
-            int opcion=lea.nextInt();
+        while (true){
+            System.out.println("=====REPORTES====="+
+                                "\n1 - Ultimos 10 juegos"+
+                                "\n2 - Ranking de Jugadores"+
+                                "\n3 - Regresar al Menu Principal");
+            System.out.println("Seleccione una opcion: ");
+            int opcion = sc.nextInt();
             
-            switch(opcion){
+            switch (opcion){
                 case 1:
-                    String[] logs=juego.getPlayeractual().getGamelogs();
-                    System.out.println("Ultimos 10 juegos");
-                    for (String log : logs) {
-                        if (log !=null) {
+                    String[] gamelogs = juego.getPlayeractual().getGamelogs();
+                    System.out.println("Registro de 10 juegos");
+                    for (String log : gamelogs) {
+                        if (log != null) {
                             System.out.println("- "+log);
                         }
                     }
                     break;
                 case 2:
-                    Player[]players=juego.getPlayers();
+                    Player[]players = juego.getPlayers();
                     System.out.println("Ranking de Jugadores");
                     for (int i = 0; i < juego.getContarJugador(); i++) {
-                        Player player=players[i];
+                        Player player = players[i];
                         System.out.println(player.getUsername()+" - "+player.getPuntos()+" puntos");
                     }
                     break;
-                    
                 case 3:
                     return;
-                    
                 default:
-                    System.out.println("OPCION INVALIDA");
+                    System.out.println("Opcion invalida, vuelva a intentar");
             }
         }
     }
     
     public static void perfil(GhostGame juego){
-        Scanner lea=new Scanner(System.in);
-        Player actualUser=juego.getPlayeractual();
+        Scanner sc = new Scanner(System.in);
+        Player playeractual =juego.getPlayeractual();
         
         while(true){
-            System.out.println("--MI PERFIL--"
-                                        +"\n 1. Ver Datos"
-                                        +"\n 2. Cambiar Password"
-                                        +"\n 3. Eliminar Cuenta"
-                                        +"\n 4. Salir"
-                                        +"\n Ingrese una opcion");
-            int opcion=lea.nextInt();
+            System.out.println("=====PERFIL====="+
+                               "\n1 - Ver Datos"+
+                               "\n2 - Cambiar Password"+
+                               "\n3 - Eliminar Cuenta"+
+                               "\n4 - Regresar");
+            System.out.println("Seleccione una opcion: ");
+            int opcion = sc.nextInt();
             
             switch(opcion){
                 case 1:
-                    System.out.println("Perfil: "+actualUser.getUsername()
-                                               +"\n Puntos: "+actualUser.getPuntos());
+                    System.out.println("Perfil: "+playeractual.getUsername()+
+                                       "\nPuntos: "+playeractual.getPuntos());
                     break;
                 case 2:
-                    System.out.println("Ingrese su nueva password: ");
-                    String nuevoPassword=lea.next();
-                    actualUser.setPassword(nuevoPassword);
-                    System.out.println("Password Actualizada!");
+                    System.out.println("Ingrese su nueva contrasena: ");
+                    String nuevoPassword = sc.next();
+                    playeractual.setPassword(nuevoPassword);
+                    System.out.println("Contrasena Actualizada!");
                     break;
-                    
                 case 3:
-                    System.out.println("Seguro que desea eliminar su cuenta? (s | n)");
-                    char confirmar=lea.next().toLowerCase().charAt(0);
+                    System.out.println("Desea eliminar su cuenta?");
+                    char confirmar = sc.next().toLowerCase().charAt(0);
                     if (confirmar == 's') {
                         juego.eliminarJugador();
-                        System.out.println("CUENTA ELIMINADA");
+                        System.out.println("Cuenta elminada correctamente");
                         return;
-                    }else{
-                          System.out.println("OPERACON CANCELADA");  
+                    }
+                    else {
+                        System.out.println("Ha cancelado el proceso");  
                     }
                     break;
                 case 4:
                     return ;
                 default:
-                    System.out.println("OPCION INVALIDA");
+                    System.out.println("Opcion invalida, vuelva a intentar");
             }
         }
     }
